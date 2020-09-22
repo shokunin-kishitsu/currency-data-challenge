@@ -7,5 +7,5 @@ set :bind, '0.0.0.0'
 set :port, 8080
 
 get '/' do
-    'hello world!'
+    erb :currency_selector, layout: :layout_main
 end
