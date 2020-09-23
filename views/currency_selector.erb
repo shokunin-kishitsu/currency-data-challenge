@@ -5,18 +5,23 @@
 <p>CHF to EUR: <%= current_rates[['CHF', 'EUR']] %></p>
 
 <h2>Convert currency</h2>
-Convert <input></input>
-<select>
-  <option selected>EUR</option>
-  <option>USD</option>
-  <option>CHF</option>
-</select>
-to
-<select>
-  <option selected>USD</option>
-  <option>EUR</option>
-  <option>CHF</option>
-</select>
-= RESULT
+
+<form>
+  Convert <input name="input_value"></input>
+  <select name="from_currency">
+    <option selected>EUR</option>
+    <option>USD</option>
+    <option>CHF</option>
+  </select>
+  to
+  <select name="to_currency">
+    <option selected>USD</option>
+    <option>EUR</option>
+    <option>CHF</option>
+  </select>
+  = RESULT
+
+  <button name="submit_button" value="value" type="submit">Convert</button>
+</form>
 
 <h2>Historical rates</h2>
