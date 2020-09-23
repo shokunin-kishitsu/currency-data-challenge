@@ -8,6 +8,9 @@ class Rate < ActiveRecord::Base
   validates_presence_of :currency_to
 
   def self.get_current(currency_from, currency_to)
-    0.456
+    mclb = Money::Bank::CurrencylayerBank.new
+    mclb.access_key = ENV['ACCESS_KEY']
+    Money.default_bank = mclb
+    Money.default_bank.get_rate(currency_from, currency_to)
   end
 end
