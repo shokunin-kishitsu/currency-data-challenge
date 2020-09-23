@@ -1,2 +1,9 @@
-<h2>Rates</h2>
-Base currency is <%= base_currency %>
+<h2>Current rates</h2>
+<p>EUR to USD: <%= current_rates[['EUR', 'USD']] %></p>
+<p>USD to EUR: <%= current_rates[['USD', 'EUR']] %></p>
+<p>EUR to CHF: <%= current_rates[['EUR', 'CHF']] %></p>
+<p>CHF to EUR: <%= current_rates[['CHF', 'EUR']] %></p>
+
+<h2>Convert currency</h2>
+
+<h2>Historical rates</h2>
