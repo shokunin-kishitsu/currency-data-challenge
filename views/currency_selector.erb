@@ -26,4 +26,4 @@
 </form>
 
 <h2>Historical rates</h2>
-<%= line_chart historical_data %>
+<%= line_chart historical_data.map {|conversion_key, data| { name: conversion_key, data: data} } %>
