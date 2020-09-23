@@ -25,6 +25,9 @@ get '/' do
       series_data[conversion_key][rate['date']] = rate['rate']
     end
   end
+  rate_values = series_data.values.map { |e| e.values }.flatten
+  min_value = rate_values.min
+  max_value = rate_values.max
 
   # load the rates from the DB or fetch them from CurrencyLayer
   current_rates = {
@@ -53,5 +56,7 @@ get '/' do
     to_currency: to_currency,
     conversion_result: conversion_result,
     historical_data: series_data,
+    min_value: min_value,
+    max_value: max_value,
   }
 end
