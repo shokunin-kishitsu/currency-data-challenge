@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/activerecord'
+require 'chartkick'
 require_relative 'models/rate'
 
 set :bind, '0.0.0.0'
