@@ -9,21 +9,14 @@ set :port, 8080
 get '/' do
   # seed the DB
   historical_data = JSON.parse(File.read("db/seeds/rates.json"))['rates']
-  series_data = {}
-  historical_data.each do |rate|
-    Rate.create(
-      date: rate['date'],
-      rate: rate['rate'],
-      from_currency: rate['from_currency'],
-      to_currency: rate['to_currency'],
-    )
-
+  series_data = historical_data.inject({}) do |memo, rate|
     conversion_key = "#{rate['from_currency']} to #{rate['to_currency']}"
-    if series_data[conversion_key].nil?
-      series_data[conversion_key] = { rate['date'] => rate['rate'] }
+    if memo[conversion_key].nil?
+      memo[conversion_key] = { rate['date'] => rate['rate'] }
     else
-      series_data[conversion_key][rate['date']] = rate['rate']
+      memo[conversion_key][rate['date']] = rate['rate']
     end
+    memo
   end
   rate_values = series_data.values.map { |e| e.values }.flatten
   min_value = rate_values.min
