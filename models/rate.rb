@@ -4,13 +4,30 @@ require 'dotenv/load'
 class Rate < ActiveRecord::Base
   validates_presence_of :date
   validates_presence_of :rate
-  validates_presence_of :currency_from
-  validates_presence_of :currency_to
+  validates_presence_of :from_currency
+  validates_presence_of :to_currency
 
-  def self.get_current(currency_from, currency_to)
-    mclb = Money::Bank::CurrencylayerBank.new
-    mclb.access_key = ENV['ACCESS_KEY']
-    Money.default_bank = mclb
-    Money.default_bank.get_rate(currency_from, currency_to)
+  CET = +2
+
+  def self.current(from_currency, to_currency)
+    Time.zone = CET
+    current_date = Time.zone.now.to_date
+    (Rate.find_by(date: current_date, from_currency: from_currency, to_currency: to_currency) \
+      or Rate.fetch_current(from_currency, to_currency)).rate.round(3)
+  end
+
+  def self.fetch_current(from_currency, to_currency)
+    Money.default_bank = Money::Bank::CurrencylayerBank.new
+    Money.default_bank.access_key = ENV['ACCESS_KEY']
+    current_rate = Money.default_bank.get_rate(from_currency, to_currency)
+    Time.zone = CET
+    current_date = Time.zone.now.to_date
+
+    Rate.create(
+      date: current_date,
+      rate: current_rate,
+      from_currency: from_currency,
+      to_currency: to_currency,
+    )
   end
 end

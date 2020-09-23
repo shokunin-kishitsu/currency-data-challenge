@@ -7,10 +7,10 @@ set :port, 8080
 
 get '/' do
     current_rates = {
-      ['EUR', 'USD'] => Rate.get_current('EUR', 'USD'),
-      ['USD', 'EUR'] => Rate.get_current('USD', 'EUR'),
-      ['EUR', 'CHF'] => Rate.get_current('EUR', 'CHF'),
-      ['CHF', 'EUR'] => Rate.get_current('CHF', 'EUR'),
+      ['EUR', 'USD'] => Rate.current('EUR', 'USD'),
+      ['USD', 'EUR'] => Rate.current('USD', 'EUR'),
+      ['EUR', 'CHF'] => Rate.current('EUR', 'CHF'),
+      ['CHF', 'EUR'] => Rate.current('CHF', 'EUR'),
     }
     erb :currency_selector, layout: :layout_main, locals: { current_rates: current_rates }
 end
