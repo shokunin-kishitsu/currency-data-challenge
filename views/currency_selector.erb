@@ -7,20 +7,21 @@
 <h2>Convert currency</h2>
 
 <form>
-  Convert <input name="input_value"></input>
-  <select name="from_currency">
-    <option selected>EUR</option>
-    <option>USD</option>
-    <option>CHF</option>
-  </select>
-  to
-  <select name="to_currency">
-    <option selected>USD</option>
-    <option>EUR</option>
-    <option>CHF</option>
-  </select>
-  = RESULT
-
+  <p>
+    Convert <input name="input_value" value="<%= conversion_amount %>" />
+    <select name="from_currency">
+      <option <% if from_currency == 'EUR' %>selected<% end %>>EUR</option>
+      <option <% if from_currency == 'USD' %>selected<% end %>>USD</option>
+      <option <% if from_currency == 'CHF' %>selected<% end %>>CHF</option>
+    </select>
+    to
+    <select name="to_currency">
+      <option <% if to_currency == 'USD' %>selected<% end %>>USD</option>
+      <option <% if to_currency == 'EUR' %>selected<% end %>>EUR</option>
+      <option <% if to_currency == 'CHF' %>selected<% end %>>CHF</option>
+    </select>
+    = <%= conversion_result.nil? ? '?' : conversion_result %>
+  </p>
   <button name="submit_button" value="value" type="submit">Convert</button>
 </form>
 

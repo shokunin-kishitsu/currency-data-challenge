@@ -8,6 +8,7 @@ class Rate < ActiveRecord::Base
   validates_presence_of :to_currency
 
   CET = +2
+  CURRENCY_LAYER_ACCESS_KEY = ENV['ACCESS_KEY']
 
   def self.current(from_currency, to_currency)
     Time.zone = CET
@@ -24,7 +25,7 @@ class Rate < ActiveRecord::Base
 
   def self.fetch_current(from_currency, to_currency)
     Money.default_bank = Money::Bank::CurrencylayerBank.new
-    Money.default_bank.access_key = ENV['ACCESS_KEY']
+    Money.default_bank.access_key = CURRENCY_LAYER_ACCESS_KEY
     current_rate = Money.default_bank.get_rate(from_currency, to_currency)
     Time.zone = CET
     current_date = Time.zone.now.to_date
