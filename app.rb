@@ -8,7 +8,15 @@ set :port, 8080
 
 get '/' do
   # seed the DB
-  historical_data = JSON.parse(File.read("db/seeds/rates.json"))
+  historical_data = JSON.parse(File.read("db/seeds/rates.json"))['rates']
+  historical_data.each do |rate|
+    Rate.create(
+      date: rate['date'],
+      rate: rate['rate'],
+      from_currency: rate['from_currency'],
+      to_currency: rate['to_currency'],
+    )
+  end
 
   # load the rates from the DB or fetch them from CurrencyLayer
   current_rates = {
