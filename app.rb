@@ -7,20 +7,11 @@ set :bind, '0.0.0.0'
 set :port, 8080
 
 get '/' do
-  # seed the DB
-  historical_data = JSON.parse(File.read("db/seeds/rates.json"))['rates']
-  series_data = historical_data.inject({}) do |memo, rate|
-    conversion_key = "#{rate['from_currency']} to #{rate['to_currency']}"
-    if memo[conversion_key].nil?
-      memo[conversion_key] = { rate['date'] => rate['rate'] }
-    else
-      memo[conversion_key][rate['date']] = rate['rate']
-    end
-    memo
-  end
-  rate_values = series_data.values.map { |e| e.values }.flatten
-  min_value = rate_values.min
-  max_value = rate_values.max
+  # fetch URL params
+  conversion_amount = params[:input_value]
+  from_currency = params[:from_currency]
+  to_currency = params[:to_currency]
+  historical_from_currency = params[:historical_from_currency] || 'EUR'
 
   # load the rates from the DB or fetch them from CurrencyLayer
   current_rates = {
@@ -30,10 +21,22 @@ get '/' do
     ['CHF', 'EUR'] => Rate.current('CHF', 'EUR'),
   }
 
-  # fetch URL params
-  conversion_amount = params[:input_value]
-  from_currency = params[:from_currency]
-  to_currency = params[:to_currency]
+  # seed the historical rates
+  historical_data = JSON.parse(File.read("db/seeds/rates.json"))['rates']
+  series_data = historical_data.inject({}) do |memo, rate|
+    if rate['from_currency'] == historical_from_currency
+      conversion_key = "#{rate['from_currency']} to #{rate['to_currency']}"
+      if memo[conversion_key].nil?
+        memo[conversion_key] = { rate['date'] => rate['rate'] }
+      else
+        memo[conversion_key][rate['date']] = rate['rate']
+      end
+    end
+    memo
+  end
+  rate_values = series_data.values.map { |e| e.values }.flatten
+  min_value = rate_values.min
+  max_value = rate_values.max
 
   # perform the conversion
   if conversion_amount && from_currency && to_currency
@@ -44,10 +47,13 @@ get '/' do
   # render the template
   erb :currency_selector, layout: :layout_main, locals: {
     current_rates: current_rates,
+
     conversion_amount: conversion_amount,
     from_currency: from_currency,
     to_currency: to_currency,
     conversion_result: conversion_result,
+
+    historical_from_currency: historical_from_currency,
     historical_data: series_data,
     min_value: min_value,
     max_value: max_value,

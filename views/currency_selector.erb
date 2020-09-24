@@ -26,6 +26,15 @@
 </form>
 
 <h2>Historical rates</h2>
+<form>
+  <p>
+    <select name="historical_from_currency" onchange="this.form.submit()">
+      <option <% if historical_from_currency == 'EUR' %>selected<% end %>>EUR</option>
+      <option <% if historical_from_currency == 'USD' %>selected<% end %>>USD</option>
+      <option <% if historical_from_currency == 'CHF' %>selected<% end %>>CHF</option>
+    </select>
+  </p>
+</form>
 <%= line_chart historical_data.map {|conversion_key, data| { name: conversion_key, data: data} },
   min: min_value,
   max: max_value
