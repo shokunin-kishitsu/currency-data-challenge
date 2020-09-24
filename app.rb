@@ -22,21 +22,23 @@ get '/' do
   }
 
   # seed the historical rates
-  historical_data = JSON.parse(File.read("db/seeds/rates.json"))['rates']
-  series_data = historical_data.inject({}) do |memo, rate|
+  saved_rates = Rate.all.map { |rate| rate.as_json }
+  seed_rates = JSON.parse(File.read("db/seeds/rates.json"))['rates']
+
+  series_data = (saved_rates + seed_rates).inject({}) do |memo, rate|
     if rate['from_currency'] == historical_from_currency
       conversion_key = "#{rate['from_currency']} to #{rate['to_currency']}"
       if memo[conversion_key].nil?
-        memo[conversion_key] = { rate['date'] => rate['rate'] }
+        memo[conversion_key] = { rate['date'] => rate['rate'].to_f }
       else
-        memo[conversion_key][rate['date']] = rate['rate']
+        memo[conversion_key][rate['date']] = rate['rate'].to_f
       end
     end
     memo
   end
   rate_values = series_data.values.map { |e| e.values }.flatten
-  min_value = rate_values.min
-  max_value = rate_values.max
+  min_value = rate_values.min.round(3)
+  max_value = rate_values.max.round(3)
 
   # perform the conversion
   if conversion_amount && from_currency && to_currency
