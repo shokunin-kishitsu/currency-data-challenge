@@ -7,11 +7,12 @@ services:
     volumes:
       - .:/code
     links:
-      - postgres
-  postgres:
+      - db
+  db:
     image: postgres
-    env_file:
-      - database.env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
     volumes:
       - database-data:/var/lib/postgresql/data/
 volumes:

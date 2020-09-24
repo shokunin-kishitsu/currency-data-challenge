@@ -1,15 +1,8 @@
-development:
+default: &default
   adapter: postgresql
   encoding: unicode
-  database: postgres
-  pool: 2
-  username: currency_data_challenge
-  password: currency_data_challenge
-production:
-  adapter: postgresql
-  encoding: unicode
+  host: db
+  database: currency_data_challenge
+  username: postgres
+  password: password
   pool: 5
-  host: <%= ENV['DATABASE_HOST'] %>
-  database: <%= ENV['DATABASE_NAME'] %>
-  username: <%= ENV['DATABASE_USER'] %>
-  password: <%= ENV['DATABASE_PASSWORD'] %>
