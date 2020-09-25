@@ -4,15 +4,11 @@ class HistoricalRates
   end
 
   def to_chartable_format(for_currency: 'EUR')
-    series_data = @rates.inject({}) do |memo, rate|
-      if rate['from_currency'] == for_currency
-        conversion_key = "#{rate['from_currency']} to #{rate['to_currency']}"
-        if memo[conversion_key].nil?
-          memo[conversion_key] = { rate['date'] => rate['rate'].to_f }
-        else
-          memo[conversion_key][rate['date']] = rate['rate'].to_f
-        end
-      end
+    filtered_rates = @rates.select{ |rate| rate['from_currency'] == for_currency }
+    series_data = filtered_rates.inject({}) do |memo, rate|
+      conversion_key = "#{rate['from_currency']} to #{rate['to_currency']}"
+      memo[conversion_key] ||= {}
+      memo[conversion_key][rate['date']] = rate['rate'].to_f
       memo
     end
     rate_values = series_data.values.map { |e| e.values }.flatten

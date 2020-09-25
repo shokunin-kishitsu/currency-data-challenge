@@ -44,9 +44,9 @@ class CurrencyDataChallenge < Sinatra::Base
       conversion_result: conversion_result,
 
       historical_from_currency: historical_from_currency,
-      historical_data: chartable_data.data,
-      min_value: chartable_data.min_value,
-      max_value: chartable_data.max_value,
+      historical_data: chartable_data[:data],
+      min_value: chartable_data[:min_value],
+      max_value: chartable_data[:max_value],
     }
   end
 end
