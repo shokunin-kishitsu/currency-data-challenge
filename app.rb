@@ -4,6 +4,7 @@ require 'sinatra/activerecord'
 require 'chartkick'
 
 require_relative 'models/currency_converter'
+require_relative 'models/current_rate'
 require_relative 'models/historical_rates'
 require_relative 'models/rate'
 
@@ -50,10 +51,10 @@ class CurrencyDataChallenge < Sinatra::Base
 
   def get_current_rates
     {
-      ['EUR', 'USD'] => Rate.current('EUR', 'USD'),
-      ['USD', 'EUR'] => Rate.current('USD', 'EUR'),
-      ['EUR', 'CHF'] => Rate.current('EUR', 'CHF'),
-      ['CHF', 'EUR'] => Rate.current('CHF', 'EUR'),
+      ['EUR', 'USD'] => CurrentRate.get('EUR', 'USD'),
+      ['USD', 'EUR'] => CurrentRate.get('USD', 'EUR'),
+      ['EUR', 'CHF'] => CurrentRate.get('EUR', 'CHF'),
+      ['CHF', 'EUR'] => CurrentRate.get('CHF', 'EUR'),
     }
   end
 end
