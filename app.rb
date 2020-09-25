@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/activerecord'
 require 'chartkick'
+
+require_relative 'models/currency_converter'
 require_relative 'models/historical_rates'
 require_relative 'models/rate'
 
@@ -17,12 +19,7 @@ class CurrencyDataChallenge < Sinatra::Base
     historical_from_currency = params[:historical_from_currency] || 'EUR'
 
     # load the rates from the DB or fetch them from CurrencyLayer
-    current_rates = {
-      ['EUR', 'USD'] => Rate.current('EUR', 'USD'),
-      ['USD', 'EUR'] => Rate.current('USD', 'EUR'),
-      ['EUR', 'CHF'] => Rate.current('EUR', 'CHF'),
-      ['CHF', 'EUR'] => Rate.current('CHF', 'EUR'),
-    }
+    current_rates = get_current_rates
 
     # load the historical rates
     historical_rates = HistoricalRates.new
@@ -30,8 +27,9 @@ class CurrencyDataChallenge < Sinatra::Base
 
     # perform the conversion
     if conversion_amount && from_currency && to_currency
-      converted_amount = conversion_amount.to_f * Rate.current(from_currency, to_currency)
-      conversion_result = Money.new(converted_amount * 100, to_currency).format
+      conversion_result = CurrencyConverter.new
+        .convert(conversion_amount, from_currency, to_currency)
+        .format
     end
 
     # render the template
@@ -47,6 +45,15 @@ class CurrencyDataChallenge < Sinatra::Base
       historical_data: chartable_data[:data],
       min_value: chartable_data[:min_value],
       max_value: chartable_data[:max_value],
+    }
+  end
+
+  def get_current_rates
+    {
+      ['EUR', 'USD'] => Rate.current('EUR', 'USD'),
+      ['USD', 'EUR'] => Rate.current('USD', 'EUR'),
+      ['EUR', 'CHF'] => Rate.current('EUR', 'CHF'),
+      ['CHF', 'EUR'] => Rate.current('CHF', 'EUR'),
     }
   end
 end
