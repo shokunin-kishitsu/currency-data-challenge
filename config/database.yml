@@ -1,8 +1,11 @@
-default: &default
+development: &default
   adapter: postgresql
   encoding: unicode
-  host: db
-  database: currency_data_challenge
   username: postgres
   password: password
   pool: 5
+
+production:
+  <<: *default
+  host: db
+  database: currency_data_challenge
