@@ -2,6 +2,6 @@
 
 To run:
 
-‘docker-compose run web rake db:migrate && docker-compose up‘
+`docker-compose run web rake db:migrate && docker-compose up`
 
-The app is accessible at ‘http://localhost:3000’
+The app is accessible at `localhost:3000`
