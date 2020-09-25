@@ -12,11 +12,12 @@ class Rate < ActiveRecord::Base
 
   def self.current(from_currency, to_currency)
     Time.zone = CET
-    if Time.zone.now >= Time.zone.now.beginning_of_day + 8.hours
+    if Rate.count.zero? || Time.zone.now >= Time.zone.now.beginning_of_day + 8.hours
       # if we're at or past 8am CET of current day, fetch the latest rates
       current_date = Time.zone.now.to_date
     else
       # otherwise yesterday's cached rates will do
+      # TODO: update the logic, need to account for the case of older dates
       current_date = (Time.zone.now - 1.day).to_date
     end
     (Rate.find_by(date: current_date, from_currency: from_currency, to_currency: to_currency) \
