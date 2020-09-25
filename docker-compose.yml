@@ -11,6 +11,7 @@ services:
   db:
     image: postgres
     environment:
+      POSTGRES_DB: currency_data_challenge
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     volumes:
