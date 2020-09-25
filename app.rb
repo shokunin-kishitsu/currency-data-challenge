@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/activerecord'
 require 'chartkick'
+require_relative 'models/historical_rates'
 require_relative 'models/rate'
 
 set :bind, '0.0.0.0'
@@ -23,24 +24,9 @@ class CurrencyDataChallenge < Sinatra::Base
       ['CHF', 'EUR'] => Rate.current('CHF', 'EUR'),
     }
 
-    # seed the historical rates
-    saved_rates = Rate.all.map { |rate| rate.as_json }
-    seed_rates = JSON.parse(File.read("db/seeds/rates.json"))['rates']
-
-    series_data = (saved_rates + seed_rates).inject({}) do |memo, rate|
-      if rate['from_currency'] == historical_from_currency
-        conversion_key = "#{rate['from_currency']} to #{rate['to_currency']}"
-        if memo[conversion_key].nil?
-          memo[conversion_key] = { rate['date'] => rate['rate'].to_f }
-        else
-          memo[conversion_key][rate['date']] = rate['rate'].to_f
-        end
-      end
-      memo
-    end
-    rate_values = series_data.values.map { |e| e.values }.flatten
-    min_value = rate_values.min.round(3)
-    max_value = rate_values.max.round(3)
+    # load the historical rates
+    historical_rates = HistoricalRates.new
+    chartable_data = historical_rates.to_chartable_format(for_currency: historical_from_currency)
 
     # perform the conversion
     if conversion_amount && from_currency && to_currency
@@ -58,9 +44,9 @@ class CurrencyDataChallenge < Sinatra::Base
       conversion_result: conversion_result,
 
       historical_from_currency: historical_from_currency,
-      historical_data: series_data,
-      min_value: min_value,
-      max_value: max_value,
+      historical_data: chartable_data.data,
+      min_value: chartable_data.min_value,
+      max_value: chartable_data.max_value,
     }
   end
 end
